@@ -33,7 +33,9 @@ export default function Page() {
   const [showReflection, setShowReflection] = useState(false);
   const [reflectionPrompt, setReflectionPrompt] = useState("");
   const [reflectionResponse, setReflectionResponse] = useState("");
-  
+  // For feedback dialog
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
 
   const handleAddThought = () => {
@@ -117,7 +119,25 @@ export default function Page() {
       setShowReflection(false);
       setReflectionPrompt("");
       setReflectionResponse("");
+      
+      // Show feedback dialog
+      setFeedbackMessage(getFeedbackMessage(targetCategory));
+      setShowFeedback(true);
+
     };
+  const getFeedbackMessage = (category: "worries" | "controllables" | "uncontrollables") => {
+      switch (category) {
+        case "worries":
+          return "Great job letting go of that worry! You can't control everything, but you can choose how you react.";
+        case "controllables":
+          return "Awesome! You picked something you can do. Even small steps can make a big difference!";
+        case "uncontrollables":
+          return "It's brave to notice what you can't control. Take a deep breath and let it go.";
+        default:
+          return "";
+      }
+    };
+
 
 
 
@@ -265,7 +285,31 @@ export default function Page() {
 
 
           </div>
-        
+               <div className="pl-3 pt-3 border mx-6 mt-6 rounded-lg pb-2">
+                  <h1 className="text-2xl">Thoughts summary</h1>
+                  <div className="flex gap-x-6 pr-3 pt-2 italic">
+                       {newThoughts.length > 0 && (
+                          <h2 className="text-center pb-4 text-lg font-medium">
+                            {newThoughts.length} <span className="text-gray-500 ">Unsorted thoughts</span> 
+                          </h2>
+                        )}
+                        {worries.length > 0 && (
+                          <h2 className="text-center pb-4 text-lg font-medium">
+                          <span className="text-gray-500 ">😟 Worries :</span> {worries.length}  
+                          </h2>
+                        )}
+                        {controllables.length > 0 && (
+                          <h2 className="text-center pb-4 text-lg font-medium">
+                            <span className="text-gray-500 ">✅ Things you can control :</span> {controllables.length} 
+                          </h2>
+                        )}
+                        {uncontrollables.length > 0 && (
+                          <h2 className="text-center pb-4 text-lg font-medium">
+                            <span className="text-gray-500 ">🚫 Things you can't control :</span> {uncontrollables.length} 
+                          </h2>
+                        )}
+                  </div>
+                </div>
           </div>
         </div>
       </div>
@@ -302,11 +346,29 @@ export default function Page() {
               />
               <div className="flex justify-end gap-4 mt-6">
                 <Button variant="outline" onClick={() => handleFinalizeCategorization()}>Skip</Button>
-                <Button onClick={() => handleFinalizeCategorization()}>Submit</Button>
+                <Button variant="outline" onClick={() => handleFinalizeCategorization()}>Submit</Button>
               </div>
             </DialogContent>
           </Dialog>
         )}
+      
+      {showFeedback && (
+        <Dialog open={showFeedback} onOpenChange={setShowFeedback}>
+          <DialogContent className="bg-white rounded-lg shadow-xl p-6 max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold">Message</DialogTitle>
+              <DialogDescription className="text-gray-700 mt-2">
+                {feedbackMessage}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end mt-6">
+              <Button onClick={() => setShowFeedback(false)} className="bg-blue-500 text-white">
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
 
     </div>    
